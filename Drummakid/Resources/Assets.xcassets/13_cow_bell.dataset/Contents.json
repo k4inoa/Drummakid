@@ -1,0 +1,15 @@
+{
+  "info": {
+    "author": "xcode",
+    "version": 1
+  },
+  "properties": {
+    "preserves-vector-representation": false
+  },
+  "data": [
+    {
+      "idiom": "universal",
+      "filename": "13_cow_bell.wav"
+    }
+  ]
+}

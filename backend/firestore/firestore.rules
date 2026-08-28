@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.admin == true;
+    }
+
+    match /artPosts/{postId} {
+      allow read: if resource.data.visibility == 'public' || (isSignedIn() && request.auth.uid == resource.data.userId);
+      allow create: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+      allow update, delete: if isSignedIn() && request.auth.uid == resource.data.userId;
+    }
+
+    match /playlistLinks/{playlistId} {
+      allow read: if true;
+      allow create, update, delete: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
+
+    match /ratings/{ratingId} {
+      allow read: if isSignedIn();
+      allow write: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
+
+    match /djPresets/{presetId} {
+      allow read, write: if isSignedIn() && request.auth.uid == request.resource.data.userId;
+    }
+
+    match /reports/{reportId} {
+      allow create: if isSignedIn();
+      allow read: if isAdmin();
+    }
+
+    match /moderationCases/{caseId} {
+      allow read, write: if isAdmin();
+    }
+
+    match /users/{userId} {
+      allow read: if true;
+      allow write: if isSignedIn() && request.auth.uid == userId;
+    }
+  }
+}
